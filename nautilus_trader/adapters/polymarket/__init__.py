@@ -41,6 +41,15 @@ from nautilus_trader.adapters.polymarket.factories import get_polymarket_http_cl
 from nautilus_trader.adapters.polymarket.factories import get_polymarket_instrument_provider
 from nautilus_trader.adapters.polymarket.loaders import PolymarketDataLoader
 from nautilus_trader.adapters.polymarket.providers import PolymarketInstrumentProvider
+from nautilus_trader.adapters.polymarket.whales import PolymarketWhaleDataClient
+from nautilus_trader.adapters.polymarket.whales import PolymarketWhalePosition
+from nautilus_trader.adapters.polymarket.whales import PolymarketWhaleScan
+from nautilus_trader.adapters.polymarket.whales import PolymarketWhaleSignal
+from nautilus_trader.adapters.polymarket.whales import PolymarketWhaleSignalConfig
+from nautilus_trader.adapters.polymarket.whales import PolymarketWhaleTrade
+from nautilus_trader.adapters.polymarket.whales import build_whale_signals
+from nautilus_trader.adapters.polymarket.whales import parse_whale_position
+from nautilus_trader.adapters.polymarket.whales import parse_whale_trade
 
 
 __all__ = [
@@ -57,8 +66,17 @@ __all__ = [
     "PolymarketInstrumentProvider",
     "PolymarketLiveDataClientFactory",
     "PolymarketLiveExecClientFactory",
+    "PolymarketWhaleDataClient",
+    "PolymarketWhalePosition",
+    "PolymarketWhaleScan",
+    "PolymarketWhaleSignal",
+    "PolymarketWhaleSignalConfig",
+    "PolymarketWhaleTrade",
+    "build_whale_signals",
     "get_polymarket_http_client",
     "get_polymarket_instrument_id",
     "get_polymarket_instrument_provider",
+    "parse_whale_position",
+    "parse_whale_trade",
     "parse_polymarket_instrument",
 ]
