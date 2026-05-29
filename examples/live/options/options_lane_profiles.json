@@ -1,0 +1,85 @@
+{
+  "lanes": [
+    {
+      "name": "interactive-brokers",
+      "status": "partial",
+      "scores": {
+        "api_data_feasibility": 8,
+        "permission_friction": 6,
+        "fee_slippage_fit": 7,
+        "pdt_compatibility": 7,
+        "integration_surface": 9
+      },
+      "hard_gates": {
+        "governance_reproducible": true,
+        "data_coverage": true,
+        "execution_realism": true,
+        "operator_checklist": false
+      },
+      "notes": [
+        "Repo has existing IBKR option examples.",
+        "Fastest lane for paper rehearsal extension."
+      ]
+    },
+    {
+      "name": "tastytrade",
+      "status": "unknown",
+      "scores": {
+        "api_data_feasibility": 7,
+        "permission_friction": 7,
+        "fee_slippage_fit": 7,
+        "pdt_compatibility": 7,
+        "integration_surface": 5
+      },
+      "hard_gates": {
+        "governance_reproducible": false,
+        "data_coverage": false,
+        "execution_realism": false,
+        "operator_checklist": false
+      },
+      "notes": [
+        "No verified adapter work in this repo yet."
+      ]
+    },
+    {
+      "name": "tradier",
+      "status": "unknown",
+      "scores": {
+        "api_data_feasibility": 7,
+        "permission_friction": 7,
+        "fee_slippage_fit": 6,
+        "pdt_compatibility": 7,
+        "integration_surface": 4
+      },
+      "hard_gates": {
+        "governance_reproducible": false,
+        "data_coverage": false,
+        "execution_realism": false,
+        "operator_checklist": false
+      },
+      "notes": [
+        "No verified adapter work in this repo yet."
+      ]
+    },
+    {
+      "name": "schwab-thinkorswim",
+      "status": "unknown",
+      "scores": {
+        "api_data_feasibility": 6,
+        "permission_friction": 6,
+        "fee_slippage_fit": 7,
+        "pdt_compatibility": 7,
+        "integration_surface": 3
+      },
+      "hard_gates": {
+        "governance_reproducible": false,
+        "data_coverage": false,
+        "execution_realism": false,
+        "operator_checklist": false
+      },
+      "notes": [
+        "No verified adapter work in this repo yet."
+      ]
+    }
+  ]
+}

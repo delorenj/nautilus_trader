@@ -28,7 +28,7 @@ export function WatchedWalletsPanel() {
     <section className="px-3 pt-4">
       <div className="mb-3 flex items-center justify-between gap-2">
         <h2 className="text-2xs font-semibold uppercase tracking-[0.18em] text-muted-steel">
-          WATCHED WALLETS
+          SIGNAL SOURCES
         </h2>
         <Badge
           variant="outline"
@@ -67,7 +67,7 @@ export function WatchedWalletsPanel() {
               value={wallet.weight}
               size="2xs"
               variant="muted"
-              display={`w ${wallet.weight.toFixed(2)}`}
+              display={`q ${wallet.weight.toFixed(2)}`}
               className="shrink-0"
             />
             <MonoNumber
@@ -86,7 +86,7 @@ export function WatchedWalletsPanel() {
         size="sm"
         className="mt-3 w-full justify-start text-muted-steel hover:text-bone"
       >
-        + Add wallet
+        + Add source
       </Button>
       <Separator className="my-3 bg-whisper" />
     </section>

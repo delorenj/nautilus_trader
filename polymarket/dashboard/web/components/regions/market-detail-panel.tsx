@@ -55,7 +55,7 @@ export function MarketDetailPanel({
           <div className="mt-3 grid gap-2 text-2xs text-muted-steel md:grid-cols-2">
             <div className="min-w-0">
               <span className="mb-1 block uppercase tracking-[0.14em]">
-                Condition
+                Signal id
               </span>
               <WalletAddress
                 address={signal.condition_id}
@@ -66,7 +66,7 @@ export function MarketDetailPanel({
             </div>
             <div className="min-w-0">
               <span className="mb-1 block uppercase tracking-[0.14em]">
-                Asset
+                Instrument
               </span>
               <WalletAddress
                 address={signal.asset_id}
@@ -81,7 +81,7 @@ export function MarketDetailPanel({
         <div className="grid gap-4 py-4 md:grid-cols-2">
           <div className="rounded-[8px] border border-dashed border-whisper bg-plane/60 p-4">
             <div className="flex h-[80px] w-full max-w-[200px] items-center text-sm text-muted-steel">
-              Probability sparkline coming soon
+              Price sparkline coming soon
             </div>
           </div>
           <div className="rounded-[8px] border border-dashed border-whisper bg-plane/60 p-4">
@@ -107,7 +107,7 @@ export function MarketDetailPanel({
                 size="2xs"
                 variant="accent"
                 compact
-                unit="pUSD"
+                unit="USD"
               />
             </div>
           </div>
@@ -121,7 +121,7 @@ export function MarketDetailPanel({
               </span>
             </TooltipTrigger>
             <TooltipContent sideOffset={6}>
-              Live execution disabled. Set LIVE_TRADING_ENABLED=true to enable.
+              Live execution disabled. Use the paper runner until live gates are armed.
             </TooltipContent>
           </Tooltip>
         </div>

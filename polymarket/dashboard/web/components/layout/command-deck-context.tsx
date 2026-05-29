@@ -48,9 +48,7 @@ export function CommandDeckProvider({
 }: {
   children: React.ReactNode;
 }): React.ReactNode {
-  const [breakpoint, setBreakpoint] = useState<Breakpoint>(
-    getBreakpointFromViewport,
-  );
+  const [breakpoint, setBreakpoint] = useState<Breakpoint>("lg");
   const [leftSheetOpen, setLeftSheetOpen] = useState(false);
   const [rightSheetOpen, setRightSheetOpen] = useState(false);
 

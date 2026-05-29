@@ -22,7 +22,7 @@ export type MonoNumberVariant =
   | "muted"
   | "accent";
 
-export type MonoNumberUnit = "pUSD" | "USD" | "%" | null;
+export type MonoNumberUnit = "USD" | "%" | null;
 
 export interface MonoNumberProps {
   value: Decimal | string | number | null | undefined;

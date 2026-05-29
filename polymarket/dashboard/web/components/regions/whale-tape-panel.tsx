@@ -40,7 +40,7 @@ export function WhaleTapePanel() {
       <div className="flex items-center justify-between gap-3 border-b border-whisper px-4 py-3">
         <div className="flex min-w-0 items-center gap-2">
           <h2 className="text-2xs font-semibold uppercase tracking-[0.18em] text-muted-steel">
-            WHALE TAPE
+            SIGNAL TAPE
           </h2>
           <MonoNumber
             value={trades.length}

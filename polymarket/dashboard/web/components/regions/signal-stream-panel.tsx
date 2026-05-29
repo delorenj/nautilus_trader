@@ -1,13 +1,13 @@
 "use client";
 
 import { useMemo } from "react";
-import { useQueryState } from "nuqs";
 
 import { SignalCard } from "@/components/signals/signal-card";
 import { MonoNumber } from "@/components/primitives";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Toggle } from "@/components/ui/toggle";
+import { useBrowserQueryState } from "@/lib/hooks/use-browser-query-state";
 import {
   ToggleGroup,
   ToggleGroupItem,
@@ -79,9 +79,9 @@ export function SignalStreamPanel() {
   const botBusLastUpdatedAt = useConnectionStore(
     (state) => state.connections["bot-bus"].lastUpdatedAt,
   );
-  const [side, setSide] = useQueryState("side", { defaultValue: "all" });
-  const [min, setMin] = useQueryState("min", { defaultValue: "0" });
-  const [query, setQuery] = useQueryState("q", { defaultValue: "" });
+  const [side, setSide] = useBrowserQueryState("side", { defaultValue: "all" });
+  const [min, setMin] = useBrowserQueryState("min", { defaultValue: "0" });
+  const [query, setQuery] = useBrowserQueryState("q", { defaultValue: "" });
   const normalizedSide = normalizeSideFilter(side);
   const minThresholdEnabled = min === "5000";
 
@@ -186,7 +186,7 @@ export function SignalStreamPanel() {
           ) : (
             <div className="rounded-[8px] border border-dashed border-whisper bg-edge/40 px-5 py-8 text-center">
               <p className="text-base text-muted-steel">
-                Waiting for whale flow. Last poll {lastPollLabel}
+                Waiting for Kraken Spot flow. Last poll {lastPollLabel}
               </p>
             </div>
           )}

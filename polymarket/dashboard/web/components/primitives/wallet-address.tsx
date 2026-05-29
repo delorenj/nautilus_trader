@@ -16,7 +16,8 @@ export interface WalletAddressProps {
   leading?: number;
   trailing?: number;
   copyable?: boolean;
-  explorer?: boolean;
+  explorerUrl?: string;
+  explorerLabel?: string;
   size?: "2xs" | "xs" | "sm";
   className?: string;
   label?: string;
@@ -33,7 +34,8 @@ export function WalletAddress({
   leading = 4,
   trailing = 4,
   copyable = true,
-  explorer = false,
+  explorerUrl,
+  explorerLabel = "Open identifier externally",
   size = "sm",
   className,
   label,
@@ -87,7 +89,7 @@ export function WalletAddress({
             "inline-flex items-center rounded-sm text-left font-medium tabular-nums transition-colors hover:text-bone focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-amber",
             sizeClasses[size],
           )}
-          aria-label={`Copy wallet address ${address}`}
+          aria-label={`Copy identifier ${address}`}
         >
           {addressText}
         </button>
@@ -119,13 +121,13 @@ export function WalletAddress({
       )}
     >
       {addressControl}
-      {explorer ? (
+      {explorerUrl ? (
         <a
-          href={`https://polygonscan.com/address/${address}`}
+          href={explorerUrl}
           target="_blank"
           rel="noreferrer"
           className="inline-flex items-center text-muted-steel transition-colors hover:text-bone focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-amber"
-          aria-label={`Open ${address} on Polygonscan`}
+          aria-label={explorerLabel}
         >
           <ExternalLink size={12} aria-hidden="true" />
         </a>

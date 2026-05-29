@@ -6,7 +6,7 @@ type DecimalInput = Decimal | string | number | null | undefined;
 
 export type FormatNotionalOptions = {
   compact?: boolean;
-  unit?: "pUSD" | "USD" | null;
+  unit?: "USD" | null;
   precision?: number;
 };
 
@@ -50,12 +50,12 @@ function formatThousands(value: Decimal, precision: number): string {
   }).format(Number(fixed));
 }
 
-function appendUnit(value: string, unit: "pUSD" | "USD" | null | undefined): string {
+function appendUnit(value: string, unit: "USD" | null | undefined): string {
   if (unit === null) {
     return value;
   }
 
-  return `${value} ${unit ?? "pUSD"}`;
+  return `${value} ${unit ?? "USD"}`;
 }
 
 function compactTier(value: Decimal): { divisor: Decimal; suffix: string } | null {

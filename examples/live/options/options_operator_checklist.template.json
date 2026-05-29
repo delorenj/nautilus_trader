@@ -1,0 +1,12 @@
+{
+  "account_type": "margin",
+  "account_type_confirmed": false,
+  "options_approval_level": 2,
+  "options_approval_confirmed": false,
+  "weekly_risk_limit_usd": 150,
+  "compliance_disclaimer_acknowledged": false,
+  "paper_mode_rehearsed": false,
+  "notes": "Set booleans to true only after operator confirmation.",
+  "updated_by": "",
+  "updated_at": ""
+}

@@ -1,0 +1,12 @@
+{
+  "account_type": "margin",
+  "account_type_confirmed": true,
+  "options_approval_level": 2,
+  "options_approval_confirmed": true,
+  "weekly_risk_limit_usd": 150,
+  "compliance_disclaimer_acknowledged": true,
+  "paper_mode_rehearsed": true,
+  "notes": "Operator requested all checklist gates set to true.",
+  "updated_by": "Jarad",
+  "updated_at": "2026-05-27T17:50:00Z"
+}

@@ -15,11 +15,11 @@ import type { StreamEvent } from "@/lib/stream/types";
 
 const MOCK_SEED = 1337;
 const WATCHED_WALLET_PSEUDONYMS = [
-  "Cobalt Whale",
-  "Yellow Submarine",
-  "Saffron Hand",
-  "Quiet Mountain",
-  "Glacier Squad",
+  "BTC Momentum",
+  "ETH Relative Strength",
+  "Spread Guard",
+  "Volatility Gate",
+  "Liquidity Sweep",
 ] as const;
 
 function seedWatchedWallets() {

@@ -37,10 +37,10 @@ const baseSignal: WhaleSignal = {
   trade_count: 7,
   latest_timestamp: 1_792_575_730,
   wallets: ["0xabc", "0xdef"],
-  title: "Will BTC close above 100k this Friday?",
-  slug: "btc-above-100k-friday",
-  event_slug: "btc-weekly",
-  outcome: "Yes",
+  title: "BTC/USDT momentum impulse",
+  slug: "btcusdt-momentum-impulse",
+  event_slug: "kraken-btcusdt",
+  outcome: "Momentum long",
 };
 
 function renderSignalCard(
@@ -69,9 +69,9 @@ describe("SignalCard", () => {
     expect(screen.getByText(baseSignal.title as string)).toBeInTheDocument();
     expect(screen.getByText(baseSignal.outcome as string)).toBeInTheDocument();
     expect(screen.getByText("12.50k")).toBeInTheDocument();
-    expect(screen.getByText("2.00k pUSD")).toBeInTheDocument();
+    expect(screen.getByText("2.00k USD")).toBeInTheDocument();
     expect(
-      within(screen.getByLabelText("Signal wallet count")).getByText("2"),
+      within(screen.getByLabelText("Signal source count")).getByText("2"),
     ).toBeInTheDocument();
   });
 

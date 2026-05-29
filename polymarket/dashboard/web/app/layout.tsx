@@ -6,9 +6,9 @@ import { Providers } from "@/app/providers";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Polymarket Dashboard — Whale Signal Bot",
+  title: "Kraken Spot Autonomy Deck",
   description:
-    "Single-operator cockpit for the dry-run whale-following signal bot",
+    "Single-operator cockpit for Kraken Spot strategy, execution, postmortem, and feedback cycles",
 };
 
 export default function RootLayout({

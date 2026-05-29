@@ -71,7 +71,7 @@ function SignalCardContent({
           value={signal.suggested_notional}
           size="lg"
           variant="accent"
-          unit="pUSD"
+          unit="USD"
           compact
         />
       </div>
@@ -113,10 +113,10 @@ function SignalCardContent({
 
       <div
         data-mono
-        aria-label="Signal wallet count"
+        aria-label="Signal source count"
         className="col-span-3 flex items-center gap-1 text-2xs"
       >
-        <span className="font-medium uppercase text-ghost">WALLETS</span>
+        <span className="font-medium uppercase text-ghost">SOURCES</span>
         <MonoNumber
           value={signal.wallets.length}
           size="2xs"

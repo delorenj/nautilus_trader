@@ -67,7 +67,7 @@ function TradeTapeRowContent({ trade }: { trade: WhaleTrade }) {
         size="xs"
         variant={trade.side === "BUY" ? "positive" : "negative"}
         compact
-        unit="pUSD"
+        unit="USD"
         className="shrink-0"
       />
       <span className="min-w-0 flex-1 truncate text-sm text-bone">

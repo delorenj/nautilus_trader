@@ -21,13 +21,13 @@ const baseTrade: WhaleTrade = {
   price: "0.4217",
   notional: "6100",
   timestamp: 1_792_575_730,
-  title: "Will BTC close above 100k this Friday?",
-  slug: "btc-above-100k-friday",
-  event_slug: "btc-weekly",
-  outcome: "Yes",
+  title: "BTC/USDT momentum impulse",
+  slug: "btcusdt-momentum-impulse",
+  event_slug: "kraken-btcusdt",
+  outcome: "Momentum long",
   outcome_index: 0,
-  name: "Wallet One",
-  pseudonym: "Whale One",
+  name: "BTC Momentum",
+  pseudonym: "BTC Momentum",
   transaction_hash: "0xtrade1",
 };
 
@@ -38,14 +38,14 @@ function renderTradeTapeRow(trade: WhaleTrade = baseTrade) {
 afterEach(cleanup);
 
 describe("TradeTapeRow", () => {
-  it("renders the whale trade data in a compact row", () => {
+  it("renders the spot signal data in a compact row", () => {
     renderTradeTapeRow();
 
-    expect(screen.getByText("Whale One")).toBeInTheDocument();
+    expect(screen.getByText("BTC Momentum")).toBeInTheDocument();
     expect(screen.getByText("\u25c6 BUY")).toBeInTheDocument();
     expect(screen.getByText("250.50")).toBeInTheDocument();
     expect(screen.getByText("0.4217")).toBeInTheDocument();
-    expect(screen.getByText("6.10k pUSD")).toBeInTheDocument();
+    expect(screen.getByText("6.10k USD")).toBeInTheDocument();
     expect(screen.getByText(baseTrade.title as string)).toBeInTheDocument();
     expect(
       screen.getByText(formatTimestampShort(baseTrade.timestamp)),
@@ -86,6 +86,6 @@ describe("TradeTapeRow", () => {
     });
 
     expect(screen.getByText("\u25c7 SELL")).toBeInTheDocument();
-    expect(screen.getByText("5.00k pUSD")).toHaveClass("text-rust");
+    expect(screen.getByText("5.00k USD")).toHaveClass("text-rust");
   });
 });

@@ -40,25 +40,31 @@ describe("WalletAddress", () => {
 
   it("copies the full address when clicked", async () => {
     render(<WalletAddress address={address} />);
-    fireEvent.click(screen.getByRole("button", { name: /copy wallet/i }));
+    fireEvent.click(screen.getByRole("button", { name: /copy identifier/i }));
 
     expect(navigator.clipboard.writeText).toHaveBeenCalledWith(address);
   });
 
   it("uses a label override while copying the real address", async () => {
-    render(<WalletAddress address={address} label="Whale Alpha" />);
-    fireEvent.click(screen.getByRole("button", { name: /copy wallet/i }));
+    render(<WalletAddress address={address} label="BTC Momentum" />);
+    fireEvent.click(screen.getByRole("button", { name: /copy identifier/i }));
 
-    expect(screen.getByText("Whale Alpha")).toBeInTheDocument();
+    expect(screen.getByText("BTC Momentum")).toBeInTheDocument();
     expect(navigator.clipboard.writeText).toHaveBeenCalledWith(address);
   });
 
-  it("links explorer mode to Polygonscan", () => {
-    render(<WalletAddress address={address} explorer />);
+  it("links an external explorer URL when provided", () => {
+    render(
+      <WalletAddress
+        address={address}
+        explorerUrl={`https://example.com/instruments/${address}`}
+        explorerLabel="Open instrument"
+      />,
+    );
 
-    expect(screen.getByRole("link", { name: /polygonscan/i })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /open instrument/i })).toHaveAttribute(
       "href",
-      `https://polygonscan.com/address/${address}`,
+      `https://example.com/instruments/${address}`,
     );
   });
 });

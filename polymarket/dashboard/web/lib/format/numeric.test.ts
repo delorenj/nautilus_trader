@@ -10,8 +10,8 @@ import {
 } from "./numeric";
 
 describe("formatNotional", () => {
-  it("formats standard notional values with the default pUSD unit", () => {
-    expect(formatNotional("2500.00")).toBe("2,500.00 pUSD");
+  it("formats standard notional values with the default USD unit", () => {
+    expect(formatNotional("2500.00")).toBe("2,500.00 USD");
   });
 
   it("formats standard notional values with a custom unit or no unit", () => {
@@ -20,11 +20,11 @@ describe("formatNotional", () => {
   });
 
   it("uses compact thresholds at thousands, millions, and billions", () => {
-    expect(formatNotional("999.99", { compact: true })).toBe("999.99 pUSD");
-    expect(formatNotional("1000", { compact: true })).toBe("1.00k pUSD");
-    expect(formatNotional("2500.00", { compact: true })).toBe("2.50k pUSD");
-    expect(formatNotional("12345678.9", { compact: true })).toBe("12.35M pUSD");
-    expect(formatNotional("1250000000", { compact: true })).toBe("1.25B pUSD");
+    expect(formatNotional("999.99", { compact: true })).toBe("999.99 USD");
+    expect(formatNotional("1000", { compact: true })).toBe("1.00k USD");
+    expect(formatNotional("2500.00", { compact: true })).toBe("2.50k USD");
+    expect(formatNotional("12345678.9", { compact: true })).toBe("12.35M USD");
+    expect(formatNotional("1250000000", { compact: true })).toBe("1.25B USD");
   });
 
   it("rounds with Decimal half-up behavior", () => {

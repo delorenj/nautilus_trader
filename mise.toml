@@ -1,2 +1,6 @@
 [tools]
 uv = "0.11.14"
+
+[env]
+_.file = [".env"]
+_.path = [".mise/scripts", "agents/hermes/pm"]

@@ -1,10 +1,10 @@
 "use client";
 
 import { Radio } from "lucide-react";
-import { useQueryState } from "nuqs";
 
 import { ConnectionBadge } from "@/components/primitives";
 import { Toggle } from "@/components/ui/toggle";
+import { useBrowserQueryState } from "@/lib/hooks/use-browser-query-state";
 import {
   type ConnectionName,
   useConnectionStore,
@@ -41,14 +41,14 @@ export function ConnectionStatusBadge({
 }
 
 export function HeaderContent() {
-  const [live, setLive] = useQueryState("live", { defaultValue: "1" });
+  const [live, setLive] = useBrowserQueryState("live", { defaultValue: "1" });
   const isLive = live === "1";
 
   return (
     <div className="flex w-full min-w-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
       <div className="min-w-0">
         <h1 className="truncate text-sm font-semibold uppercase tracking-[0.18em] text-bone">
-          POLYMARKET WHALE DECK
+          KRAKEN SPOT DECK
         </h1>
       </div>
 

@@ -1,3 +1,4 @@
+export * from "./autonomy-store";
 export * from "./book-store";
 export * from "./connection-store";
 export * from "./signal-store";
