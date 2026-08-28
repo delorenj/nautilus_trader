@@ -12,7 +12,7 @@ it, so stay attributable and never split-brain the state.
 
 | | |
 | --- | --- |
-| Agent ID | `nautilus_trader-pm` |
+| Agent ID | `nautilus-trader-pm` |
 | Repo | `nautilus_trader` |
 | Role | `pm` |
 | Telegram | @DrStonkyBot |

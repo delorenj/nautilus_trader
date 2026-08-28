@@ -4,7 +4,7 @@
 
 repo: nautilus_trader
 role: pm
-agent_id: nautilus_trader-pm
+agent_id: nautilus-trader-pm
 display_name: "Nautilus_trader PM"
 purpose: "pm agent for nautilus_trader"
 
@@ -14,7 +14,7 @@ model:
   name: ""
 
 # Hermes profile name. Profile dir is symlinked into ./runtime/.
-profile: nautilus_trader-pm
+profile: nautilus-trader-pm
 
 # Telegram bot identity (one bot per agent — see docs/architecture.md).
 telegram:
@@ -33,8 +33,8 @@ plane:
 bloodbank:
   subscribe:
     - "bloodbank.evt.v1.repo.nautilus_trader.>"
-    - "bloodbank.cmd.v1.agent.nautilus_trader-pm.>"
-  producer: "hermes-agent:nautilus_trader-pm"
+    - "bloodbank.cmd.v1.agent.nautilus-trader-pm.>"
+  producer: "hermes-agent:nautilus-trader-pm"
 
 # Runtime repo (git-tracked HERMES_HOME, auto-checkpointed).
 runtime:
