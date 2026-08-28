@@ -21,7 +21,7 @@ telegram:
   bot_username: "DrStonkyBot"
 # Email address (Cloudflare Email Routing on delo.sh).
 email:
-  address: "nautilus_trader-pm@delo.sh"
+  address: "nautilus-trader-pm@delo.sh"
   forward_to: "jaradd@gmail.com"
 
 # Plane project (1:1 with this agent).
