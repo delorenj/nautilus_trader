@@ -28,7 +28,7 @@ email:
 plane:
   workspace: "33god"
   # identifier is set by .scripts/40-plane.sh after creation
-  identifier: "NAUPM"
+  identifier: "MKTJNG"
 # Bloodbank wiring (consumed + produced subjects).
 bloodbank:
   subscribe:
