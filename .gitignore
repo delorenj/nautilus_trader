@@ -215,3 +215,5 @@ tests/test_data/**/backtest/**
 
 # Hermes agent runtime — pure-local state, never tracked (degit-runtime).
 agents/hermes/*/runtime/
+# The upstream *.sh rule would hide the Hermes role scaffold; flume audits these.
+!agents/hermes/**/*.sh
