@@ -1,4 +1,4 @@
-# Nautilus_trader PM — continuous ticket sentinel pass
+# Nautilus Trader PM — continuous ticket sentinel pass
 
 Run one continuous ticket orchestration pass for the **nautilus_trader** repo.
 A cheap systemd heartbeat already decided this full pass is needed.

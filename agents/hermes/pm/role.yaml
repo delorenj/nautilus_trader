@@ -5,7 +5,7 @@
 repo: nautilus_trader
 role: pm
 agent_id: nautilus-trader-pm
-display_name: "Nautilus_trader PM"
+display_name: "Nautilus Trader PM"
 purpose: "pm agent for nautilus_trader"
 
 # Inference target (empty = inherit from global ~/.hermes/config.yaml)
