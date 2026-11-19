@@ -1,20 +1,29 @@
 # Continuous ticket orchestration (sentinel engine)
 
-Status: sentinel engine protocol (provider-agnostic)
+Status: Plane sentinel protocol. Read the nearest `.project.json` `ticket_provider.type`
+before following any workflow below; only an explicit `plane` binding activates
+this protocol. For `trello`, the existing adapter can read issues, milestones and
+states, but this document does not authorize Krebs labels, Todo dispatch, Plane
+events, launch ordering, or verdict transitions on Trello. Report unsupported
+lifecycle/launch automation instead. Missing or unsupported providers stop before
+adapter or credential access. `.project.json` is authoritative for the board ID;
+a missing/empty board ID is not supplied by `role.yaml`.
 
-## Invariant
+## Plane: Krebs lifecycle v2 (2026-11-14): this engine no longer dispatches
 
-Every ready ticket gets an implementation worker, in parallel, or the sentinel
-records why it cannot. There is no default cap on tickets in progress; a healthy
-worker on one ticket never stops another ready ticket from being dispatched. An
-explicit positive `.project.json` `automation.implementation.wip_limit` is an
-opt-in cap the sentinel honours; absent means unlimited.
+The board has five lanes: Backlog, Todo, In Progress, Done, Cancelled. Lifecycle meaning lives
+in labels (`lifecycle:triaged`, `lifecycle:review`, `lifecycle:needs-input`,
+`lifecycle:blocked`, `lifecycle:human`, `agent:working`, `agent:failed`); see `~/code/33GOD/krebs/docs/lifecycle.md`.
+**`krebs tick` is the only dispatcher**: two implementation slots per scope, triaged Todo
+tickets in Todo order. The sentinel never delegates implementation workers, never moves a
+ticket to `started`, and never spawns a worker. It orders Todo, applies verdicts (In Progress +
+`lifecycle:review`: accepted closes, sent back returns to Todo with `returned: <criterion>`; the PM
+gives the verdict), unblocks held tickets and keeps evidence current. Where this document says "review lane",
+read In Progress + `lifecycle:review`.
 
-One worker, one owner per ticket: never double-dispatch a ticket or duplicate
-another owner's work. Tickets whose file scopes clearly collide are sequenced
-with a `--blocks` relation instead of run blind in parallel. The short
-board-driver lease (`momo-wip-lock.py`) is not a WIP limit; it only serializes
-board selection/transition passes. Release it before waiting on a worker.
+One owner per ticket: never duplicate another owner's work. Tickets whose file scopes clearly
+collide are sequenced with a `--blocks` relation. The short board-driver lease
+(`board-lease.py`) is not a WIP limit; it only serializes board selection/transition passes.
 
 When `heartbeat.sh` starts the pass it has already acquired that lease for the
 agent under a per-pass owner (`hermes:<agent_id>:pass-<utc>-<pid>`) and says so in
@@ -26,22 +35,21 @@ owner and never under another name, because acquire is reentrant only for the
 identical owner string and the agent's own lease would otherwise refuse it. An
 agent acquiring with no launcher picks one owner for its turn
 (`hermes:<agent_id>:<turn tag>`), writes it out literally and reuses it. Back off
-whenever the lease is held fresh by any other owner (`momo`, a job, another agent,
+whenever the lease is held fresh by any other owner (an interactive session, a job, another agent,
 or another pass of the same desk): owners are unique per pass precisely so two
 passes of one agent serialize instead of sharing the lease.
 
-The sentinel owns the watch loop. Workers (codex, opencode, copilot, …) own
-implementation. The sentinel clears review-lane work via the autonomous
-adversarial review (act, do not wait) protocol
-(`autonomous-delegated-review.md`), and still does not write application code or
-approve merges.
+The sentinel owns the watch loop. Workers (codex, opencode, copilot, …), dispatched by
+`krebs tick`, own implementation. The sentinel applies verdicts on handed-back work, and
+still does not write application code or approve merges.
 
 ## Ticket access
 
-All board access goes through the adapter (`tp`, from
+All Plane board access goes through the adapter (`tp`, from
 `.scripts/lib/ticket-provider.sh`) and reasons in normalized states:
-`backlog | unstarted | started | in_review | completed`. Never call the provider
-directly — the engine is identical across Linear, Plane, and Trello.
+`backlog | unstarted | completed | cancelled` (read `started` only; never write it). Never call Plane
+directly. The Trello adapter's existing read operations do not imply this Plane
+lifecycle is implemented for Trello.
 
 ## Work-state feed
 
@@ -61,38 +69,34 @@ current and machine-readable: `source`, `agent_id`, `repo`, `ticket_provider`,
 
 When sources disagree, record a truth-check note and keep the issue open.
 
-## Ticket selection (every pass, for each ready ticket)
+## Todo order (every pass)
 
-1. A blocked/review ticket needing only agent-doable evidence repair.
-2. An unblocked issue in the current milestone.
-3. A small, high-priority backlog issue when the milestone has no ready ticket.
-
-Claim each chosen issue (one owner per ticket), move it to `started`
-(`tp transition <id> started`) and create/refresh its evidence file before
-spawning one worker for it. Repeat for every other ready ticket; sequence a
-ticket whose file scope clearly collides with a running one via `--blocks`.
+Choose the order of Todo, not the next worker. Priority: owner-filed bugs and
+launch work first (the launch cut line), then a blocked/review ticket needing only
+agent-doable evidence repair, then an unblocked issue in the current milestone, then a small
+high-priority Backlog issue when Todo is empty. Move at most 2 Backlog tickets up per pass.
+Krebs dispatches the top triaged Todo tickets into free slots; sequence a ticket whose file
+scope clearly collides with a running one via `--blocks`.
 
 ## Stop conditions
 
-Stop without spawning only when: the board/evidence cannot be inspected; every
-candidate is blocked by external evidence/credentials/product decisions (a
-ticket blocked **only** on human review is NOT a stop condition — run it through
-the independent adversarial review and act on the verdict immediately, no
-waiting; and a dependent blocked **only** on a review-accepted feature is NOT
-blocked); every ready ticket already has a healthy worker (or an explicit `wip_limit` is reached); or the next action needs
-destructive git ops / production credentials / a paid action.
+Stop without writing only when the board/evidence cannot be inspected, or the lease is held by
+another owner. A ticket waiting only on a verdict is not a stop condition: give and apply the
+verdict. A ticket held by `lifecycle:needs-input` or `lifecycle:blocked` waits for its owner and
+holds no slot. A ticket held by `lifecycle:human` is the owner's by hand: never triaged, dispatched
+or reviewed, never commented on; only the owner removes the label.
 
-The loop never ends a pass with work parked waiting on the operator.
+The loop never ends a pass with a delivered verdict unapplied.
 
 ## Review and closure
 
 1. Run ticket verification.
 2. Run the close gate: `.scripts/sentinel/bin/issue-close-gate.sh <ISSUE>`.
-3. Run the independent adversarial review — an adversarial microscope, with the
-   reviewer agent NOT the implementer (`autonomous-delegated-review.md`). On a
-   clean adversarial verdict the loop autonomously treats the ticket as done
-   (leaving it in the review lane as the operator's deferred-QA queue) and moves
-   on with no grace wait. A real finding holds it back to active.
+3. Give and apply the verdict (the PM: `ACCEPTED` / `SENT BACK`). For code, run an independent
+   adversarial review (`autonomous-delegated-review.md`, reviewer NOT the implementer) rather
+   than trusting the implementer's summary. Accepted: `px close <ref> -m "<reason, evidence link>"`
+   (Done). Sent back: `px release <ref> -m "returned: <criterion>"` (Todo). Cannot judge without a
+   person: `+lifecycle:needs-input` with the question as a comment.
 4. Gate fail → leave open, record missing evidence.
 5. Downstream regression rollback: if a later dependent proves a
    review-accepted feature is actually broken, move it back to active as a

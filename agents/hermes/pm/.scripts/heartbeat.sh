@@ -10,8 +10,13 @@
 # reconciliation pass when local state says no worker is active, the worker
 # heartbeat is stale, or the last full run is outside the cooldown window. The
 # full pass executes the role's sentinel.prompt.md, which reasons about tickets
-# through the ticket-provider adapter (Linear | Plane | Trello) — never a
+# through the ticket-provider adapter (Plane | Trello) — never a
 # hardcoded backend. After the sentinel decision (skip OR full), it
+#
+# KREBS LIFECYCLE v2 (2026-11-14): this script and the pass it launches NEVER dispatch
+# implementation. `krebs tick` (Candybar, every 10 minutes) is the only dispatcher: it moves
+# triaged Todo tickets to In Progress, two slots per scope. The pass orders Todo, applies
+# verdicts (In Progress + lifecycle:review) and unblocks; see sentinel.prompt.md.
 set -euo pipefail
 
 ROLE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"   # agents/hermes/<role>
@@ -54,8 +59,8 @@ load_fleet_environment "$FLEET_ENV" "$FLEET_ENV_PARSER"
 # the pass report and state file are its record). NOT `oneshot`: Hermes charges a
 # oneshot session's subagents against delegation.oneshot_max_children (default 2,
 # tools/delegate_tool.py _oneshot_spawn_budget), a hidden two-workers-per-pass cap
-# that contradicts "one worker per ready ticket, no WIP limit". On 2026-11-06 it
-# refused the third delegate_task of a forge PM pass and stalled the board.
+# the pass no longer delegates workers at all (Krebs dispatches), so the cap is moot, but
+# `tool` stays the right label for a machine-paced run.
 SESSION_SOURCE="${SENTINEL_SESSION_SOURCE:-tool}"
 case "$SESSION_SOURCE" in
   cli|tui|gui|acp|tool|oneshot) ;;
@@ -110,11 +115,6 @@ repo_root() {
 }
 REPO_ROOT="$(repo_root)"
 cd "$REPO_ROOT"
-# A repo with no .project.json has no Krebs execution mode: it is legacy.
-EXECUTION_MODE="$(python3 -c 'import json,pathlib,sys; p=pathlib.Path(sys.argv[1]); print((json.loads(p.read_text()) if p.is_file() else {}).get("execution",{}).get("mode","legacy"))' "$REPO_ROOT/.project.json")"
-if [[ "$EXECUTION_MODE" == managed || "$EXECUTION_MODE" == shadow ]]; then
-  KREBS_PLANNER_ENABLED="$(reconcile_enabled)" exec python3 "$ROLE_DIR/.scripts/managed-execution.py" "$REPO_ROOT"
-fi
 
 mkdir -p "$RUNTIME/logs"
 
@@ -179,9 +179,8 @@ if status in {"blocked","stalled","error"}:
         or iso_epoch(state.get("last_runner_completed_at")) or iso_epoch(state.get("updated_at")))
     if last_blocked_run and (now - last_blocked_run) < blocked_full_run_cooldown:
         print("skip:blocker-cooldown"); raise SystemExit(0)
-# No "a worker is already running, skip" gate: a PM orchestrates many tickets in
-# parallel, so a healthy worker on one ticket must never stop a pass that would
-# dispatch a different ready ticket. The cooldown below is the only throttle.
+# No "a worker is already running, skip" gate: the pass writes the board (Todo order,
+# verdicts) regardless of live workers. The cooldown below is the only throttle.
 last_full_run = float(state.get("last_full_run_epoch") or 0)
 if last_full_run and (now - last_full_run) < full_run_cooldown: print("skip:cooldown")
 else: print("run:full")
@@ -227,8 +226,8 @@ state.update({"source":"hermes-continuous-ticket-sentinel","agent_id":agent_id,"
 tmp = path.with_suffix(path.suffix + ".tmp"); tmp.write_text(json.dumps(state, indent=2, sort_keys=True)+"\n"); tmp.replace(path)
 PYEOF
 
-# Board-driver lease (momo E2/S2.3; not a WIP limit): serializes short board
-# selection/transition passes. Don't full-drive if the human-drivable Momo (or any
+# Board-driver lease (not a WIP limit; interval-driver's board-lease.py): serializes short board
+# selection/transition passes. Don't full-drive if an interactive session (or any
 # other owner) holds it fresh — it's driving the same board right now. A crashed
 # holder's lease expires (ttl) so the board is never wedged. Release on any exit.
 #
@@ -243,7 +242,7 @@ PYEOF
 #
 # The owner is unique PER PASS (hermes:<agent_id>:pass-<utc>-<pid>), never the bare
 # hermes:<agent_id>: a gateway turn of this same agent (Telegram, a Bloodbank or
-# Momo-crank delegation) is a different driver and acquires under its own unique
+# crank delegation) is a different driver and acquires under its own unique
 # owner. A shared owner string would make both acquires "reentrant", two drivers
 # would write the board at once, and the first release would drop the lease out
 # from under the other. With one owner per pass they serialize like any two
@@ -256,7 +255,7 @@ PYEOF
 WIP_LOCK="$RUNTIME/wip-driver.lock"
 LEASE_OWNER="hermes:$AGENT_ID:pass-$(date -u +%Y%m%dT%H%M%SZ)-$$"
 LEASE_TTL=3600
-LEASE_CLI="$ROLE_DIR/.scripts/momo-wip-lock.py"
+LEASE_CLI="$ROLE_DIR/.scripts/board-lease.py"
 if ! lease_out="$(python3 "$LEASE_CLI" acquire "$WIP_LOCK" "$LEASE_OWNER" --ttl "$LEASE_TTL" 2>&1)"; then
   printf '[heartbeat] board-driver lease not ours (%s) — skipping full reconcile pass this tick\n' "$lease_out"
   exit 0
@@ -272,10 +271,10 @@ prompt+="The launcher that started this pass already acquired the board-driver l
 prompt+="\`\`\`bash"$'\n'
 prompt+="$lease_cmd held    $WIP_LOCK $LEASE_OWNER   # 0 = still yours"$'\n'
 prompt+="$lease_cmd refresh $WIP_LOCK $LEASE_OWNER   # during a long board pass"$'\n'
-prompt+="$lease_cmd release $WIP_LOCK $LEASE_OWNER   # before waiting on workers"$'\n'
+prompt+="$lease_cmd release $WIP_LOCK $LEASE_OWNER   # when done writing"$'\n'
 prompt+="$lease_cmd acquire $WIP_LOCK $LEASE_OWNER --ttl $LEASE_TTL   # write the board again after releasing"$'\n'
 prompt+="\`\`\`"$'\n\n'
-prompt+="Releasing early is fine; when the workers finish and you need to write the board again (Review, Done, a hold), re-acquire with exactly \`$LEASE_OWNER\` as above. If that acquire answers HELD by any other owner (\`momo\`, another agent, or another pass or turn of your own desk under a different owner string), another driver is writing the board: do not write it, and leave the transition for the next pass. The launcher's own release at exit is a no-op once you have released."$'\n'
+prompt+="Releasing early is fine; you need to write the board again (a verdict, a Todo move, a hold), re-acquire with exactly \`$LEASE_OWNER\` as above. If that acquire answers HELD by any other owner (an interactive session, another agent, or another pass or turn of your own desk under a different owner string), another driver is writing the board: do not write it, and leave the transition for the next pass. The launcher's own release at exit is a no-op once you have released."$'\n'
 set +e
 HERMES_PROFILE_NAME="$PROFILE_NAME" "$ROLE_LAUNCHER" chat -Q --source "$SESSION_SOURCE" --max-turns 90 -q "$prompt"
 status=$?
@@ -302,4 +301,9 @@ tmp = path.with_suffix(path.suffix + ".tmp"); tmp.write_text(json.dumps(state, i
 print(0 if state.get("status") in {"active","blocked","stalled","idle"} else exit_code)
 PYEOF
 )"
+# No dangling work (2026-11-15): commit and push the pass's own evidence files. Never fails the pass.
+LAND_SCRIPT="$ROLE_DIR/.scripts/land-outputs.sh"
+if [[ -f "$LAND_SCRIPT" && ! -L "$LAND_SCRIPT" ]]; then
+  ROLE_DIR="$ROLE_DIR" REPO_ROOT="$REPO_ROOT" bash "$LAND_SCRIPT" || true
+fi
 exit "$runner_exit"
