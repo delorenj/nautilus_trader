@@ -50,3 +50,21 @@ runtime:
 # Provenance — managed by the template, do not hand-edit.
 provisioned_at: "2026-05-27T09:38:11Z"
 provisioned_by: hermes-agent-template
+company_identity:
+  version: 1
+  subject: "af5d7f0b-8524-4c7b-8394-c9fe379c1cc1"
+  handle: "nautilus-trader-pm"
+  email: "nautilus-trader-pm@agents.delo.sh"
+  status: "active"
+  enrolled_at: "2026-11-20T02:25:24.245Z"
+  bindings:
+    cloudflare_access:
+      principal: "2e98a6b1ce1ecb8144215318c694f106.access"
+      instance: "https://delonet.cloudflareaccess.com"
+      credential_ref: "op://DeLoSecrets/pb3nladk6g6e5in2oa2vn5fz7y/j7p4ysffjjf6munvpflkl7hzse"
+    plane:
+      principal: "c796f927-05f3-4984-b07b-ef0f2e2efe90"
+      instance: "https://plane.delo.sh/33god"
+      credential_ref: "op://DeLoSecrets/4g65aizn4h4jr26qmrowirfu5q/credential"
+      attribution_mode: "native"
+      native_actor_id: "c796f927-05f3-4984-b07b-ef0f2e2efe90"
